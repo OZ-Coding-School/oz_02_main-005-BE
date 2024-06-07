@@ -19,7 +19,7 @@ services:
     image: mysql:8.0.37
     container_name: main_005_mysql
     ports:
-      - "3306:3306"
+      - "3307:3306"
     env_file:
       - .env
     environment:
