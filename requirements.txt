@@ -1,0 +1,17 @@
+# Django
+django>=5.0.6,<6.0.0
+
+# DRF(Django Rest Framework)
+djangorestframework>=3.15.1,<4.0.0
+
+# Mysql
+mysqlclient>=1.4.3,<1.5.0
+
+# DRF-Spectacular
+drf-spectacular>=0.27.2,<0.28.0
+
+# Socket Connection
+channels>=4.1.0,<4.2.0
+daphne>=4.1.2,<4.2.0
+
+djangorestframework-simplejwt>=5.0.0,<6.0.0
