@@ -64,7 +64,7 @@ class CardsetDetailView(generics.RetrieveAPIView):
 )
 
 @api_view(['POST'])
-def rate_cardset(request, pk):
+def cardset_rate(request, pk):
     try:
         card_set = Cardset.objects.get(pk=pk, cardset_public=True, cardset_down=True)
     except Cardset.DoesNotExist:
@@ -99,10 +99,8 @@ def search_cardset(request):
 # 저장
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
-def save_cardset(request):
-    """
-    작성자(A)가 작성한 암기카드셋트를 사용자(B)의 암기카드셋트에 저장하는 API
-    """
+def cardset_save(request):
+
     try:
         with transaction.atomic():
             # 요청으로부터 cardset_id와 user_b_id를 가져옵니다.

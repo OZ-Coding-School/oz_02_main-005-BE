@@ -1,16 +1,15 @@
 from django.urls import path
 from .views import (
-    CardsetListView, RateListView, NewListView, SaveListView, CardsetDetailView,
-    rate_cardset, search_cardset, save_cardset
+    RateListView, NewListView, SaveListView, CardsetDetailView,
+    cardset_rate, cardset_search, cardset_save,
 )
 
 urlpatterns = [
-    path('cardsets/', CardsetListView.as_view(), name='cardset-list'),
-    path('cardsets/rate/', RateListView.as_view(), name='rate-list'),
-    path('cardsets/new/', NewListView.as_view(), name='new-list'),
-    path('cardsets/save/', SaveListView.as_view(), name='save-list'),
-    path('cardsets/<int:pk>/', CardsetDetailView.as_view(), name='posting'),
-    path('cardsets/<int:pk>/rate/', rate_cardset, name='rate-cardset'),
-    path('cardsets/search/', search_cardset, name='search-cardset'),
-    path('cardsets/save_cardset/', save_cardset, name='save_cardset'),
+    path('community/rate_list/', RateListView.as_view(), name='rate_list'),
+    path('community/new_list/', NewListView.as_view(), name='new_list'),
+    path('community/save_list/', SaveListView.as_view(), name='save_list'),
+    path('community/cardset/<int:pk>/', CardsetDetailView.as_view(), name='cardset_public'),
+    path('community/cardset/<int:pk>/rate/', cardset_rate, name='cardset_rate'),
+    path('community/search/', cardset_search, name='cardset_search'),
+    path('community/save/', cardset_save, name='cardset_save'),
 ]
