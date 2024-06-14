@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-w-l8kto^$o+^89inpt=2r!z@ccvra^(-sf4l-9pbq2&q&yejt-
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -39,7 +39,11 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'cardset',
     'card',
-    'rest_framework'
+    'rest_framework',
+    'drf_yasg',
+    'folders',
+    'comments',
+
 ]
 
 MIDDLEWARE = [
