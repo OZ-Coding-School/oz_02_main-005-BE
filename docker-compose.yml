@@ -9,7 +9,8 @@ services:
       - "8000:8000"
     volumes:
       - ./app:/app
-    command: sh -c "python manage.py runserver 0.0.0.0:8000"
+      - ./certs:/certs
+    command: sh -c "python manage.py runsslserver 0.0.0.0:8000 --certificate /certs/mycert.crt --key /certs/mykey.key"
     env_file:
       - .env
     depends_on:

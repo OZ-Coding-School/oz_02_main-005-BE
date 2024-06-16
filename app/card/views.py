@@ -32,3 +32,9 @@ class CardView(APIView):
         serializer=CardSerializer(data=card)
         serializer.save(raise_exception=True)
         return Response(serializer.data)
+    
+
+    def get_card_each(self,request,card_id):
+        card = Card.objects.filter(id=card_id)
+        serializer = CardSerializer(card)
+        return Response(data=serializer.data,status=status.HTTP_200_OK)
