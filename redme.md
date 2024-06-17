@@ -17,4 +17,12 @@ Django의 내장 인증 시스템 사용
 docker-compose exec app python manage.py makemigrations
 docker-compose exec app python manage.py migrate
 
+docker-compose exec app python manage.py createsuperuser
+
 run exec
+
+Account: ck
+Member email: ck@gmail.com
+Display name: kim
+Password: 
+Password (again): 

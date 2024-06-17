@@ -1,6 +1,8 @@
 import os
 from pathlib import Path
 from datetime import timedelta
+from django.conf import settings
+from allauth.account import app_settings
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -30,6 +32,11 @@ INSTALLED_APPS = [
     "rest_framework",
     "rest_framework_simplejwt",
     "rest_framework_simplejwt.token_blacklist",
+    'django.contrib.sites',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.kakao',
 ]
 
 MIDDLEWARE = [
@@ -40,11 +47,33 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    'allauth.account.middleware.AccountMiddleware',
 ]
 
-AUTHENTICATION_BACKENDS = ['members.backends.EmailBackend']
-
 AUTH_USER_MODEL = 'members.Member'
+
+AUTHENTICATION_BACKENDS = [
+    'members.backends.MemberBackend',
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+    'allauth.socialaccount.auth_backends.SocialAccountBackend',
+]
+
+ACCOUNT_USER_MODEL_USERNAME_FIELD = 'account'
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_USERNAME_REQUIRED = False
+ACCOUNT_AUTHENTICATION_METHOD = 'email'
+ACCOUNT_EMAIL_VERIFICATION = 'optional'
+ACCOUNT_ADAPTER = 'members.adapters.CustomAccountAdapter'
+
+ACCOUNT_FORMS = {
+    'login': 'members.forms.CustomLoginForm',
+    'signup': 'members.forms.CustomSignupForm',
+}
+
+# Custom email field for allauth
+app_settings.USER_MODEL_EMAIL_FIELD = 'member_email'
+app_settings.FILTER_USERS_BY_EMAIL = 'members.utils.filter_users_by_email'
 
 ROOT_URLCONF = "app.urls"
 
@@ -59,6 +88,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "django.template.context_processors.request",
             ],
         },
     },
@@ -174,6 +204,8 @@ SIMPLE_JWT = {
     'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=1),
 }
 
+SITE_ID = 1
+
 # CSRF trusted origins
 CSRF_TRUSTED_ORIGINS = ['http://127.0.0.1:8000']
 
@@ -182,3 +214,18 @@ ALLOWED_HOSTS = ["*"]
 
 # Use database-backed sessions
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'
+
+# Redirect URLs
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'
+
+# Social account providers configuration
+SOCIALACCOUNT_PROVIDERS = {
+    'kakao': {
+        'APP': {
+            'client_id': os.getenv('3edc653ab8283218a43038e37fbb134d'),
+            'secret': os.getenv('FnedMqpZAOg4P9bpNf46QWGB0Xq41CSU'),
+            'key': os.getenv('KAKAO_KEY')
+        }
+    }
+}
