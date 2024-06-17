@@ -14,3 +14,4 @@ class CardSet(models.Model):
     viewed_at = models.DateTimeField(auto_now_add=True)
     class Meta:
         db_table = 'Cardset'
+        ordering=['viewed_at']

@@ -25,9 +25,9 @@ class MemberManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
-class Member(AbstractBaseUser):
+class Member(models.Model):
     member_id = models.AutoField(primary_key=True)
-    account = models.CharField(max_length=50, unique=True)
+    account = models.CharField(max_length=50)
     member_email = models.CharField(max_length=50, unique=True)
     display_name = models.CharField(max_length=50, unique=True)
     password = models.CharField(max_length=128)
@@ -52,5 +52,5 @@ class Member(AbstractBaseUser):
         return self.is_staff
 
     class Meta:
-        db_table = "member"
+        db_table = "Member"
         managed = True

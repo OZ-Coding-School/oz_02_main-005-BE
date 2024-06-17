@@ -4,9 +4,10 @@ from .models import Card
 from rest_framework.response import Response
 import datetime
 from .serializers import CardSerializer
-from rest_framework import status
+from rest_framework import status,permissions
 # Create your views here.
 class CardView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
     def post(self,request,cardset_id):
         serializer = CardSerializer(
             card_question = request.data.card_question,
