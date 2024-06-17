@@ -2,8 +2,8 @@ from django.shortcuts import render
 from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
-from .models import Cardset, Card, Folder, Member
-from .serializers import CardsetSerializer, CardSerializer, RateSerializer, RateCreateSerializer
+from .models import Member, Folder, Cardset, Card, Mileage
+from .serializers import CardsetSerializer, CardSerializer, RateSerializer, RateCreateSerializer, CopyCardsetRequestSerializer
 from django.db.models import Avg, Q
 from drf_spectacular.utils import extend_schema, OpenApiParameter
 from django.db import transaction
@@ -25,12 +25,50 @@ class RateListView(generics.ListAPIView):
     def get_queryset(self):
         return Cardset.objects.filter(cardset_public=True, cardset_down=True).annotate(avg_rate=Avg('rate__rate')).order_by('-avg_rate', 'created_at')
 
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+
+        response_data = []
+        for card_set_data in serializer.data:
+            card_set = queryset.get(pk=card_set_data['cardset_id'])
+            avg_rate = card_set.rate_set.aggregate(average=Avg('rate'))['average']
+            cards = Card.objects.filter(cardset=card_set)
+            cards_count = cards.count()
+
+            card_set_data.update({
+                'avg_rate': avg_rate,
+                'cards_count': cards_count,
+            })
+            response_data.append(card_set_data)
+
+        return Response(response_data)
+
+
 # 최신순
 class NewListView(generics.ListAPIView):
     serializer_class = CardsetSerializer
 
     def get_queryset(self):
         return Cardset.objects.filter(cardset_public=True, cardset_down=True).order_by('-created_at')
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+
+        response_data = []
+        for card_set_data in serializer.data:
+            card_set = queryset.get(pk=card_set_data['cardset_id'])
+            avg_rate = card_set.rate_set.aggregate(average=Avg('rate'))['average']
+            cards = Card.objects.filter(cardset=card_set)
+            cards_count = cards.count()
+
+            card_set_data.update({
+                'avg_rate': avg_rate,
+                'cards_count': cards_count,
+            })
+            response_data.append(card_set_data)
+
+        return Response(response_data)
 
 # 저장순
 class SaveListView(generics.ListAPIView):
@@ -38,6 +76,24 @@ class SaveListView(generics.ListAPIView):
 
     def get_queryset(self):
         return Cardset.objects.filter(cardset_public=True, cardset_down=True).order_by('-down_count')
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+
+        response_data = []
+        for card_set_data in serializer.data:
+            card_set = queryset.get(pk=card_set_data['cardset_id'])
+            avg_rate = card_set.rate_set.aggregate(average=Avg('rate'))['average']
+            cards = Card.objects.filter(cardset=card_set)
+            cards_count = cards.count()
+
+            card_set_data.update({
+                'avg_rate': avg_rate,
+                'cards_count': cards_count,
+            })
+            response_data.append(card_set_data)
+
+        return Response(response_data)
 
 # 카드뭉치 정보
 class CardsetDetailView(generics.RetrieveAPIView):
@@ -85,7 +141,7 @@ def cardset_rate(request, pk):
     responses={200: CardsetSerializer(many=True)}
 )
 @api_view(['GET'])
-def search_cardset(request):
+def cardset_search(request):
     query = request.GET.get('q')
     if query:
         cardsets = Cardset.objects.filter(
@@ -97,41 +153,39 @@ def search_cardset(request):
 
 
 # 저장
+@extend_schema(
+    request=CopyCardsetRequestSerializer,
+    responses={201: 'Cardset copied successfully', 400: 'Bad Request', 404: 'Not Found'}
+)
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def cardset_save(request):
 
     try:
         with transaction.atomic():
-            # 요청으로부터 cardset_id와 user_b_id를 가져옵니다.
             cardset_id = request.data.get('cardset_id')
-            user_b_id = request.data.get('user_b_id')
+            user_id = request.data.get('user_id')
             
-            # 원본 cardset과 관련된 카드들을 가져옵니다.
             original_cardset = Cardset.objects.get(pk=cardset_id)
             original_cards = Card.objects.filter(cardset=original_cardset)
             
-            # 대상 사용자를 가져옵니다.
-            user_b = Member.objects.get(pk=user_b_id)
+            user = Member.objects.get(pk=user_id)
             
-            # 대상 사용자가 이미 'save' 폴더를 가지고 있는지 확인하고, 없으면 생성합니다.
             save_folder, created = Folder.objects.get_or_create(
-                member=user_b,
+                member=user,
                 folder_title='save',
                 defaults={'folder_title': 'save'}
             )
             
-            # 사용자 B를 위한 새로운 cardset을 생성합니다.
             new_cardset = Cardset.objects.create(
                 folder=save_folder,
                 cardset_title=original_cardset.cardset_title,
                 cardset_public=False,
                 cardset_down=False,
-                member=user_b,
+                member=user,
                 down_count=0
             )
             
-            # 원본 cardset의 각 카드를 새로운 cardset으로 복사합니다.
             for card in original_cards:
                 Card.objects.create(
                     cardset=new_cardset,
@@ -140,6 +194,20 @@ def cardset_save(request):
                     question_type=card.question_type,
                     question_option=card.question_option
                 )
+
+            original_cardset.down_count += 1
+            original_cardset.save()
+            
+            user_b_mileage, created = Mileage.objects.get_or_create(member=user, defaults={'mileage_amount': 0})
+            if user_b_mileage.mileage_amount >= 10:
+                user_b_mileage.mileage_amount -= 10
+                user_b_mileage.save()
+            else:
+                return Response({"error": "Insufficient mileage"}, status=status.HTTP_400_BAD_REQUEST)
+
+            original_cardset_mileage, created = Mileage.objects.get_or_create(member=original_cardset.member, defaults={'mileage_amount': 0})
+            original_cardset_mileage.mileage_amount += 10
+            original_cardset_mileage.save()
             
             return Response({"message": "Cardset copied successfully"}, status=status.HTTP_201_CREATED)
         
