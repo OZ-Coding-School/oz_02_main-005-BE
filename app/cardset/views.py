@@ -4,14 +4,16 @@ from .models import CardSet
 import pandas as pd
 import datetime
 # Create your views here.
-from rest_framework import status
+from rest_framework import status,permissions
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from .serializers import CardSetSerializer
 from card.models import Card
-executor = ThreadPoolExecutor(max_workers=5)
+from rest_framework.decorators import api_view
+
 
 class CardSetView(APIView):
+    @api_view(['POST',])
     def post(self, request):
         serializer = CardSetSerializer(
             cardset_title=request.data.cardset_title,
@@ -38,7 +40,8 @@ class CardSetView(APIView):
         return Response(serializer.data,status=status.HTTP_200_OK)
     
     def getSave(self,request):
-        cardset_save_data = CardSet.objects.filter(cardset_down=1,many=True)
+        member = request.member
+        cardset_save_data = CardSet.objects.filter(member=member,cardset_down=1,many=True)
         serializer = CardSetSerializer(cardset_save_data,many=True)
         return Response(serializer.data,status=status.HTTP_200_OK)
     
@@ -50,3 +53,6 @@ class CardSetView(APIView):
         serializer.save()
         return Response(serializer.data,status=status.HTTP_201_CREATED)
             
+    #def recent_viewed(self,request):
+        #member = request.member
+        #cardset_recent = CardSet.objects.filter(member=member,many=True)
