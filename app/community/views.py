@@ -11,13 +11,6 @@ from rest_framework.permissions import IsAuthenticated
 
 # Create your views here.
 
-# 작성순
-class CardsetListView(generics.ListAPIView):
-    serializer_class = CardsetSerializer
-
-    def get_queryset(self):
-        return Cardset.objects.filter(cardset_public=True, cardset_down=True)
-
 # 인기순
 class RateListView(generics.ListAPIView):
     serializer_class = CardsetSerializer
@@ -129,7 +122,18 @@ def cardset_rate(request, pk):
     serializer = RateCreateSerializer(data=request.data)
     if serializer.is_valid():
         rate = serializer.save(cardset=card_set)
+
+        # 사용자에게 마일리지 적립
+        if request.user.is_authenticated:
+            user_mileage, created = Mileage.objects.get_or_create(member=request.user)
+            user_mileage.mileage_amount += 5
+            user_mileage.save()
+        else:
+            # 인증되지 않은 사용자에게 별도의 처리가 필요한 경우
+            pass
+
         return Response(RateSerializer(rate).data, status=status.HTTP_201_CREATED)
+
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
