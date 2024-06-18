@@ -36,4 +36,3 @@ class FolderSerializer(serializers.ModelSerializer):
 
 class CopyCardsetRequestSerializer(serializers.Serializer):
     cardset_id = serializers.IntegerField()
-    user_id = serializers.IntegerField()

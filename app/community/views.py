@@ -2,7 +2,7 @@ from django.shortcuts import render
 from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
-from .models import Member, Folder, Cardset, Card, Mileage
+from .models import Mileage, rate
 from .serializers import CardsetSerializer, CardSerializer, RateSerializer, RateCreateSerializer, CopyCardsetRequestSerializer
 from django.db.models import Avg, Q
 from drf_spectacular.utils import extend_schema, OpenApiParameter
@@ -164,19 +164,15 @@ def cardset_search(request):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def cardset_save(request):
-
     try:
         with transaction.atomic():
             cardset_id = request.data.get('cardset_id')
-            user_id = request.data.get('user_id')
             
             original_cardset = Cardset.objects.get(pk=cardset_id)
             original_cards = Card.objects.filter(cardset=original_cardset)
             
-            user = Member.objects.get(pk=user_id)
-            
             save_folder, created = Folder.objects.get_or_create(
-                member=user,
+                member=request.user,
                 folder_title='save',
                 defaults={'folder_title': 'save'}
             )
@@ -186,7 +182,7 @@ def cardset_save(request):
                 cardset_title=original_cardset.cardset_title,
                 cardset_public=False,
                 cardset_down=False,
-                member=user,
+                member=request.user,
                 down_count=0
             )
             
@@ -202,10 +198,10 @@ def cardset_save(request):
             original_cardset.down_count += 1
             original_cardset.save()
             
-            user_b_mileage, created = Mileage.objects.get_or_create(member=user, defaults={'mileage_amount': 0})
-            if user_b_mileage.mileage_amount >= 10:
-                user_b_mileage.mileage_amount -= 10
-                user_b_mileage.save()
+            user_mileage, created = Mileage.objects.get_or_create(member=request.user, defaults={'mileage_amount': 0})
+            if user_mileage.mileage_amount >= 10:
+                user_mileage.mileage_amount -= 10
+                user_mileage.save()
             else:
                 return Response({"error": "Insufficient mileage"}, status=status.HTTP_400_BAD_REQUEST)
 
