@@ -35,8 +35,11 @@ schema_view = get_schema_view(
    permission_classes=(permissions.AllowAny,),
 )
 
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+from members.views import home
 
 urlpatterns = [
+    path("", home, name="home"),
     path("admin/", admin.site.urls),
     path('cardset/',include('cardset.urls')),
     path('cards/',include('card.urls')),
@@ -49,6 +52,5 @@ urlpatterns = [
     path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
     path("api/redoc/", SpectacularRedocView.as_view(url_name="schema"), name="redoc"),
     path("swagger/", SpectacularSwaggerView.as_view(url_name="schema"), name="swagger-ui"),
+    path('accounts/', include('allauth.urls')),
 ]
-
-

@@ -26,6 +26,9 @@ RUN python -m venv /py && \
 RUN mkdir /certs
 COPY certs/mycert.crt /certs/mycert.crt
 COPY certs/mykey.key /certs/mykey.key
+
+
+
 ENV PATH="/py/bin:$PATH"
 
 USER django-user
