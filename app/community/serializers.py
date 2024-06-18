@@ -1,24 +1,5 @@
 from rest_framework import serializers
-from .models import Member, Rate
-from card.models import Floder, Cardset, Card
-
-class MemberSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Member
-        fields = ['display_name']  # 필요한 필드를 지정
-
-class CardSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Card
-        fields = '__all__'
-
-class CardsetSerializer(serializers.ModelSerializer):
-    cards = CardSerializer(many=True, read_only=True)
-    member = MemberSerializer(read_only=True)
-
-    class Meta:
-        model = Cardset
-        fields = '__all__'
+from .models import Rate
 
 class RateSerializer(serializers.ModelSerializer):
     class Meta:
@@ -30,10 +11,6 @@ class RateCreateSerializer(serializers.ModelSerializer):
         model = Rate
         fields = ['rate']
 
-class FolderSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Floder
-        fields = '__all__'
 
 class CopyCardsetRequestSerializer(serializers.Serializer):
     cardset_id = serializers.IntegerField()

@@ -2,13 +2,14 @@ from django.shortcuts import render
 from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
-from .serializers import CardsetSerializer, CardSerializer, RateSerializer, RateCreateSerializer, CopyCardsetRequestSerializer
+from .serializers import RateSerializer, RateCreateSerializer, CopyCardsetRequestSerializer
 from django.db.models import Avg, Q
 from drf_spectacular.utils import extend_schema, OpenApiParameter
 from django.db import transaction
 from rest_framework.permissions import IsAuthenticated
-from .models import Mileage, Rate
+from .models import Mileage
 from card.models import Folder, CardSet, Card
+from cardset.serializers import CardsetSerializer
 
 # Create your views here.
 
