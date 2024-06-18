@@ -13,3 +13,10 @@ drf-spectacular>=0.27.2,<0.28.0
 # Socket Connection
 channels>=4.1.0,<4.2.0
 daphne>=4.1.2,<4.2.0
+pandas <= 3.0.0
+drf_yasg <=2.0.0
+
+djangorestframework-simplejwt>=5.0.0,<6.0.0
+
+openai >=1.0.0
+django-sslserver-v2

@@ -2,12 +2,13 @@ from django.shortcuts import render
 from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
-from .models import Mileage, rate
 from .serializers import CardsetSerializer, CardSerializer, RateSerializer, RateCreateSerializer, CopyCardsetRequestSerializer
 from django.db.models import Avg, Q
 from drf_spectacular.utils import extend_schema, OpenApiParameter
 from django.db import transaction
 from rest_framework.permissions import IsAuthenticated
+from .models import Mileage, Rate
+from card.models import Folder, CardSet, Card
 
 # Create your views here.
 
@@ -16,7 +17,7 @@ class RateListView(generics.ListAPIView):
     serializer_class = CardsetSerializer
 
     def get_queryset(self):
-        return Cardset.objects.filter(cardset_public=True, cardset_down=True).annotate(avg_rate=Avg('rate__rate')).order_by('-avg_rate', 'created_at')
+        return CardSet.objects.filter(cardset_public=True, cardset_down=True).annotate(avg_rate=Avg('rate__rate')).order_by('-avg_rate', 'created_at')
 
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
@@ -43,7 +44,7 @@ class NewListView(generics.ListAPIView):
     serializer_class = CardsetSerializer
 
     def get_queryset(self):
-        return Cardset.objects.filter(cardset_public=True, cardset_down=True).order_by('-created_at')
+        return CardSet.objects.filter(cardset_public=True, cardset_down=True).order_by('-created_at')
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
         serializer = self.get_serializer(queryset, many=True)
@@ -68,7 +69,7 @@ class SaveListView(generics.ListAPIView):
     serializer_class = CardsetSerializer
 
     def get_queryset(self):
-        return Cardset.objects.filter(cardset_public=True, cardset_down=True).order_by('-down_count')
+        return CardSet.objects.filter(cardset_public=True, cardset_down=True).order_by('-down_count')
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
         serializer = self.get_serializer(queryset, many=True)
@@ -90,7 +91,7 @@ class SaveListView(generics.ListAPIView):
 
 # 카드뭉치 정보
 class CardsetDetailView(generics.RetrieveAPIView):
-    queryset = Cardset.objects.filter(cardset_public=True, cardset_down=True)
+    queryset = CardSet.objects.filter(cardset_public=True, cardset_down=True)
     serializer_class = CardsetSerializer
 
     def get(self, request, *args, **kwargs):
@@ -115,8 +116,8 @@ class CardsetDetailView(generics.RetrieveAPIView):
 @api_view(['POST'])
 def cardset_rate(request, pk):
     try:
-        card_set = Cardset.objects.get(pk=pk, cardset_public=True, cardset_down=True)
-    except Cardset.DoesNotExist:
+        card_set = CardSet.objects.get(pk=pk, cardset_public=True, cardset_down=True)
+    except CardSet.DoesNotExist:
         return Response({'detail': 'Cardset not found.'}, status=status.HTTP_404_NOT_FOUND)
 
     serializer = RateCreateSerializer(data=request.data)
@@ -148,11 +149,11 @@ def cardset_rate(request, pk):
 def cardset_search(request):
     query = request.GET.get('q')
     if query:
-        cardsets = Cardset.objects.filter(
+        cardsets = CardSet.objects.filter(
             Q(cardset_title__icontains=query) | Q(member__display_name__icontains=query)
         )
     else:
-        cardsets = Cardset.objects.all()
+        cardsets = CardSet.objects.all()
     return Response(CardsetSerializer(cardsets, many=True).data)
 
 
@@ -168,7 +169,7 @@ def cardset_save(request):
         with transaction.atomic():
             cardset_id = request.data.get('cardset_id')
             
-            original_cardset = Cardset.objects.get(pk=cardset_id)
+            original_cardset = CardSet.objects.get(pk=cardset_id)
             original_cards = Card.objects.filter(cardset=original_cardset)
             
             save_folder, created = Folder.objects.get_or_create(
@@ -177,7 +178,7 @@ def cardset_save(request):
                 defaults={'folder_title': 'save'}
             )
             
-            new_cardset = Cardset.objects.create(
+            new_cardset = CardSet.objects.create(
                 folder=save_folder,
                 cardset_title=original_cardset.cardset_title,
                 cardset_public=False,

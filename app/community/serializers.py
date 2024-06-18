@@ -1,5 +1,6 @@
 from rest_framework import serializers
-from .models import Member, Folder, Cardset, Card, Rate
+from .models import Member, Rate
+from card.models import Floder, Cardset, Card
 
 class MemberSerializer(serializers.ModelSerializer):
     class Meta:
@@ -31,7 +32,7 @@ class RateCreateSerializer(serializers.ModelSerializer):
 
 class FolderSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Folder
+        model = Floder
         fields = '__all__'
 
 class CopyCardsetRequestSerializer(serializers.Serializer):

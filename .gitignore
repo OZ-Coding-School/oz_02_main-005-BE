@@ -6,7 +6,7 @@ __pycache__
 media
 db.sqlite3
 migrations/
-
+./certs
 # Backup files # 
 *.bak 
 
