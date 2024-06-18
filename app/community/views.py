@@ -89,24 +89,6 @@ class SaveListView(generics.ListAPIView):
 
         return Response(response_data)
 
-# 카드뭉치 정보
-class CardsetDetailView(generics.RetrieveAPIView):
-    queryset = CardSet.objects.filter(cardset_public=True, cardset_down=True)
-    serializer_class = CardsetSerializer
-
-    def get(self, request, *args, **kwargs):
-        card_set = self.get_object()
-        avg_rate = card_set.rate_set.aggregate(average=Avg('rate'))['average']
-        cards = Card.objects.filter(cardset=card_set)
-        cards_count = cards.count()
-        response_data = self.get_serializer(card_set).data
-        response_data.update({
-            'avg_rate': avg_rate,
-            'cards_count': cards_count,
-            'cards': CardSerializer(cards, many=True).data
-        })
-        return Response(response_data)
-
 # 별점
 @extend_schema(
     request=RateCreateSerializer,
