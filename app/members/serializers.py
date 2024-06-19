@@ -27,10 +27,10 @@ class MemberSerializer(serializers.ModelSerializer):
         user.save()
         return user
 
-class LoginSerializer(serializers.Serializer):
+class LoginSerializer(serializers.ModelSerializer):
     account = serializers.CharField()
     password = serializers.CharField(write_only=True)
 
-class TokenResponseSerializer(serializers.Serializer):
+class TokenResponseSerializer(serializers.ModelSerializer):
     refresh = serializers.CharField()
     access = serializers.CharField()
