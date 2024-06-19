@@ -9,11 +9,15 @@ from .serializers import CommentSerializer,CommentGetSerializer
 from drf_yasg.utils import swagger_auto_schema
 
 from cardset.models import CardSet
-
+from drf_yasg import openapi
 class CreateComment(APIView):
     #permission_classes = [IsAuthenticated]
     
-    @swagger_auto_schema(request_body=CommentSerializer)
+    @swagger_auto_schema(
+        manual_parameters=[
+            openapi.Parameter('name', openapi.IN_QUERY, description="Name of the item", type=openapi.TYPE_STRING)
+        ]
+    )
     def post(self, request, cardset_id):
 
         try:

@@ -12,12 +12,18 @@ from card.models import Card
 from cardset.models import CardSet
 from folders.models import Folder
 from cardset.serializers import CardSetSerializer
-
+from drf_yasg import openapi
 # Create your views here.
-
+from drf_yasg.utils import swagger_auto_schema
 # 인기순
 class RateListView(generics.ListAPIView):
     serializer_class = CardSetSerializer
+    @swagger_auto_schema(
+        manual_parameters=[
+            openapi.Parameter('name', openapi.IN_QUERY, description="Name of the item", type=openapi.TYPE_STRING)
+        ]
+    )
+    
 
     def get_queryset(self):
         return CardSet.objects.filter(cardset_public=True, cardset_down=True).annotate(avg_rate=Avg('rate__rate')).order_by('-avg_rate', 'created_at')

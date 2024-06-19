@@ -39,16 +39,16 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from members.views import home
 
 urlpatterns = [
+    path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
+    path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
+    re_path(r'^swagger(?P<format>\.json|\.yaml)$', schema_view.without_ui(cache_timeout=0), name='schema-json'),
     path("", home, name="home"),
     path("admin/", admin.site.urls),
     path('cardset/',include('cardset.urls')),
     path('cards/',include('card.urls')),
     path("folders/", include("folders.urls")),
     path("comments/", include("comments.urls")),
-    path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
-    path("api/redoc/", SpectacularRedocView.as_view(url_name="schema"), name="redoc"),
-    path("swagger/", SpectacularSwaggerView.as_view(url_name="schema"), name="swagger-ui"),
-    re_path(r'^swagger(?P<format>\.json|\.yaml)$', schema_view.without_ui(cache_timeout=0), name='schema-json'),
+    
     path("member/", include("members.urls")),
     path('accounts/', include('allauth.urls')),
     path('community/', include('community.urls')),

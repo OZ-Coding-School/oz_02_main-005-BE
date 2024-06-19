@@ -7,17 +7,21 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from drf_yasg.utils import swagger_auto_schema
-
+from drf_yasg import openapi
 from .serializers import FolderSerializer, FolderGetSerializer
 from .models import Folder
-# from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated
 
 # Create your views here.
 # Folder 생성_동기
 class CreateFolder(APIView):
-    #permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
-    @swagger_auto_schema(request_body=FolderSerializer)
+    @swagger_auto_schema(
+        manual_parameters=[
+        openapi.Parameter('name', openapi.IN_QUERY, description="Name of the item", type=openapi.TYPE_STRING)
+        ]
+    )
     def post(slef, request): 
         serializer = FolderSerializer(data=request.data)
 

@@ -9,11 +9,13 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from .serializers import CardSetSerializer
 from card.models import Card
-from rest_framework.decorators import api_view
 from drf_yasg.utils import swagger_auto_schema
-
+from drf_yasg import openapi
 class CardSetView(APIView):
-    @swagger_auto_schema(request_body=CardSetSerializer)
+    
+    @swagger_auto_schema(
+            request_body=CardSetSerializer
+    )
     def post(self, request):
         serializer = CardSetSerializer(
             cardset_title=request.data.cardset_title,
@@ -32,28 +34,28 @@ class CardSetView(APIView):
             )
         serializer.save()
         return Response(serializer.data,status=status.HTTP_201_CREATED)
-        
-
+  
     def get(self,request):
         cardset_data =CardSet.objects.all()
         serializer = CardSetSerializer(cardset_data,many=True)
         return Response(serializer.data,status=status.HTTP_200_OK)
-    
-    def getSave(self,request):
+class CardSetSaveView(APIView):
+    def get(self,request):
         member = request.member
         cardset_save_data = CardSet.objects.filter(member=member,cardset_down=1,many=True)
         serializer = CardSetSerializer(cardset_save_data,many=True)
         return Response(serializer.data,status=status.HTTP_200_OK)
+
     @swagger_auto_schema(request_body=CardSetSerializer)
-    def update(self,request,cardset_id):
+    def post(self,request,cardset_id):
         cardset_update= CardSet.objects.filter(id=cardset_id)
         cardset_update.update(cardset_title=request.data.cardset_title,modified_at = datetime.now())
 
         serializer= CardSetSerializer(cardset_update,many=True)
         serializer.save()
         return Response(serializer.data,status=status.HTTP_201_CREATED)
-            
-    def recent_viewed(self,request):
+class CardSetGetView(APIView):
+    def get(self,request):
         member = request.member
         cardset_recent = CardSet.objects.filter(member=member,many=True).order_by('-viewed_at')
         serializer = CardSetSerializer(cardset_recent,many=True)
