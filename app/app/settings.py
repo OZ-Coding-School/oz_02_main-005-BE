@@ -25,6 +25,7 @@ ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "").split(",")
 
 
 # Application definition
+SITE_ID = 1
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -50,6 +51,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'allauth.socialaccount.providers.kakao',
     'community',
+    
 
 ]
 
@@ -61,8 +63,9 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'allauth.account.middleware.AccountMiddleware'
 ]
-
+AUTH_USER_MODEL = 'members.Member'
 ROOT_URLCONF = 'app.urls'
 
 TEMPLATES = [
@@ -82,24 +85,17 @@ TEMPLATES = [
 
 ]
 
-MIDDLEWARE = [
-    "django.middleware.security.SecurityMiddleware",
-    "django.contrib.sessions.middleware.SessionMiddleware",
-    "django.middleware.common.CommonMiddleware",
-    "django.middleware.csrf.CsrfViewMiddleware",
-    "django.contrib.auth.middleware.AuthenticationMiddleware",
-    "django.contrib.messages.middleware.MessageMiddleware",
-    "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    'allauth.account.middleware.AccountMiddleware',
-]
 
-AUTH_USER_MODEL = 'members.Member'
+
 
 AUTHENTICATION_BACKENDS = [
     'members.backends.MemberBackend',
     'django.contrib.auth.backends.ModelBackend',
     'allauth.account.auth_backends.AuthenticationBackend',
-    'allauth.socialaccount.auth_backends.SocialAccountBackend',
+    
+    
+
+    
 ]
 
 ACCOUNT_USER_MODEL_USERNAME_FIELD = 'account'
@@ -120,22 +116,7 @@ app_settings.FILTER_USERS_BY_EMAIL = 'members.utils.filter_users_by_email'
 
 ROOT_URLCONF = "app.urls"
 
-TEMPLATES = [
-    {
-        "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
-        "APP_DIRS": True,
-        "OPTIONS": {
-            "context_processors": [
-                "django.template.context_processors.debug",
-                "django.template.context_processors.request",
-                "django.contrib.auth.context_processors.auth",
-                "django.contrib.messages.context_processors.messages",
-                "django.template.context_processors.request",
-            ],
-        },
-    },
-]
+
 
 
 WSGI_APPLICATION = 'app.wsgi.application'

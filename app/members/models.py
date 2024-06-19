@@ -28,9 +28,10 @@ class MemberManager(models.Manager):
     def get_by_natural_key(self, account):
         return self.get(account=account)
 
+
 class Member(models.Model):
     member_id = models.AutoField(primary_key=True)
-    account = models.CharField(max_length=50)
+    account = models.CharField(max_length=50, unique=True)
     member_email = models.CharField(max_length=50, unique=True)
     display_name = models.CharField(max_length=50, unique=True)
     password = models.CharField(max_length=128)
@@ -69,5 +70,5 @@ class Member(models.Model):
         return self.is_staff
 
     class Meta:
-        db_table = "Member"
+        db_table = "member"
         managed = True
