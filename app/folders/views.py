@@ -53,6 +53,7 @@ class UpdateFolder(APIView):
             return Response({"error": "Folder not found"}, status=404)
         except Exception as e:
             return Response({"error": str(e)}, status=500)
+
         
 class DeleteFolder(APIView):
     #permission_classes = [IsAuthenticated]
