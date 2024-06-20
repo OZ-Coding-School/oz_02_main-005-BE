@@ -3,6 +3,7 @@ from rest_framework.views import APIView
 from .models import Card
 from rest_framework.response import Response
 import datetime
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.decorators import api_view
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
@@ -10,7 +11,7 @@ from .serializers import CardSerializer
 from rest_framework import status,permissions
 # Create your views here.
 class CardView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAuthenticated]
     @swagger_auto_schema(request_body=CardSerializer)
     def post(self,request,cardset_id):
         serializer = CardSerializer(
@@ -26,6 +27,7 @@ class CardView(APIView):
         else:
             return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
 class CardUpdateView(APIView):
+    permission_classes = [IsAuthenticated]
     @swagger_auto_schema(request_body=CardSerializer)
     def post(self,request,cardset_id):
         card = Card.objects.get(cardset=cardset_id)
@@ -39,6 +41,7 @@ class CardUpdateView(APIView):
         serializer.save(raise_exception=True)
         return Response(serializer.data)
 class CardGetView(APIView):
+    permission_classes = [IsAuthenticated]
     def get(self,request,card_id):
         card = Card.objects.filter(id=card_id)
         serializer = CardSerializer(card)

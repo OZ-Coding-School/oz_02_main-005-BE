@@ -12,5 +12,5 @@ class RateCreateSerializer(serializers.ModelSerializer):
         fields = ['rate']
 
 
-class CopyCardsetRequestSerializer(serializers.Serializer):
+class CopyCardsetRequestSerializer(serializers.ModelSerializer):
     cardset_id = serializers.IntegerField()

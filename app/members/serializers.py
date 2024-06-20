@@ -31,6 +31,6 @@ class LoginSerializer(serializers.ModelSerializer):
     account = serializers.CharField()
     password = serializers.CharField(write_only=True)
 
-class TokenResponseSerializer(serializers.ModelSerializer):
+class TokenResponseSerializer(serializers.Serializer):
     refresh = serializers.CharField()
     access = serializers.CharField()

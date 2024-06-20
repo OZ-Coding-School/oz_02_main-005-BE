@@ -6,7 +6,7 @@ from .models import Member
 from .serializers import MemberSerializer, LoginSerializer, TokenResponseSerializer
 from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
-from drf_spectacular.utils import extend_schema, OpenApiResponse
+from drf_spectacular.utils import extend_schema, OpenApiResponse, OpenApiParameter
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework.exceptions import AuthenticationFailed
@@ -17,6 +17,14 @@ class MemberCreate(generics.CreateAPIView):
     queryset = Member.objects.all()
     serializer_class = MemberSerializer
     permission_classes = [AllowAny]
+
+    @extend_schema(
+        request=MemberSerializer,
+        responses={
+            201: TokenResponseSerializer,
+            400: OpenApiResponse(description='Bad Request'),
+        },
+    )
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -43,6 +51,12 @@ class MemberLogin(APIView):
             200: TokenResponseSerializer,
             401: OpenApiResponse(description='Invalid Credentials'),
         },
+
+        parameters=[
+            OpenApiParameter(name='account', description='Account of the user', required=True, type=str),
+            OpenApiParameter(name='password', description='Password of the user', required=True, type=str),
+        ],
+
     )
     def post(self, request, *args, **kwargs):
         serializer = LoginSerializer(data=request.data)
@@ -71,6 +85,10 @@ class MemberLogout(APIView):
             200: OpenApiResponse(description='Logout successful'),
             401: OpenApiResponse(description='Invalid token'),
         },
+
+        parameters=[
+            OpenApiParameter(name='refresh', description='Refresh token to blacklist', required=True, type=str, location=OpenApiParameter.QUERY),
+        ],
     )
     def post(self, request, *args, **kwargs):
         refresh_token = request.data.get('refresh')
