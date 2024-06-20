@@ -18,9 +18,14 @@ class CreateFolder(APIView):
     permission_classes = [IsAuthenticated]
 
     @swagger_auto_schema(
-        manual_parameters=[
-        openapi.Parameter('name', openapi.IN_QUERY, description="Name of the item", type=openapi.TYPE_STRING)
-        ]
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'folder_title': openapi.Schema(type=openapi.TYPE_STRING, description='folder title'),
+                'member': openapi.Schema(type=openapi.TYPE_INTEGER, description='member_id'),
+            },
+            required=['folder_title', 'member']  
+        )
     )
     def post(slef, request): 
         serializer = FolderSerializer(data=request.data)
@@ -33,7 +38,16 @@ class CreateFolder(APIView):
 class UpdateFolder(APIView):
     #permission_classes = [IsAuthenticated]
 
-    @swagger_auto_schema(request_body=FolderSerializer)
+    @swagger_auto_schema(
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'folder_title': openapi.Schema(type=openapi.TYPE_STRING, description='new_title'),
+                'member': openapi.Schema(type=openapi.TYPE_INTEGER, description='member_id'),
+            },
+            required=['folder_title','member']  
+        )
+    )
     def post(self, request, folder_id): 
         data = request.data
         new_title = data.get("folder_title")
@@ -69,8 +83,8 @@ class DeleteFolder(APIView):
             return Response({"error": "Folder not found"}, status=404)
         except Exception as e:
             return Response({"error": str(e)}, status=500)
-  
-        
+
+
 #<최신순으로 조회하는 기능>_동기
 class FolderList(APIView):
     #permission_classes = [IsAuthenticated]
