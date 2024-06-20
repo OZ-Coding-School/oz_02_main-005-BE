@@ -69,8 +69,11 @@ class DeleteFolder(APIView):
 class FolderList(APIView):
     #permission_classes = [IsAuthenticated]
 
-    def get(self, request, *args, **kwargs):
-       folders = Folder.objects.all().order_by(F('modified_at').desc())
+    def get(self, request, member_id, *args, **kwargs):
+       if member_id:
+            folders = Folder.objects.all.filter(member_id=member_id).order_by(F('modified_at').desc())
+       else:
+            folders = Folder.objects.none()
        serializer = FolderGetSerializer(folders, many=True)
        return Response(serializer.data, status=status.HTTP_200_OK)
         
