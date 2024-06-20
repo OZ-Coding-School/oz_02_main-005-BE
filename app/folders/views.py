@@ -69,6 +69,7 @@ class DeleteFolder(APIView):
             return Response({"error": "Folder not found"}, status=404)
         except Exception as e:
             return Response({"error": str(e)}, status=500)
+  
         
 #<최신순으로 조회하는 기능>_동기
 class FolderList(APIView):

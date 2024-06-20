@@ -14,6 +14,5 @@ urlpatterns = [
         DeleteFolder.as_view(),
         name="delete_folder",
     ),
-    path("list/<int:member_id>",FolderList.as_view(), name="folder_list"),
-    
+    path("list/<int:member_id>",FolderList.as_view(), name="folder_list"),   
 ]
