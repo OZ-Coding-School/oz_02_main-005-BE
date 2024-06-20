@@ -40,9 +40,8 @@ class CardSetView(APIView):
         serializer = CardSetSerializer(cardset_data,many=True)
         return Response(serializer.data,status=status.HTTP_200_OK)
 class CardSetSaveView(APIView):
-    def get(self,request):
-        member = request.member
-        cardset_save_data = CardSet.objects.filter(member=member,cardset_down=1,many=True)
+    def get(self,request,member_id):
+        cardset_save_data = CardSet.objects.filter(member_id=member_id,cardset_down=1)
         serializer = CardSetSerializer(cardset_save_data,many=True)
         return Response(serializer.data,status=status.HTTP_200_OK)
 
@@ -55,8 +54,7 @@ class CardSetSaveView(APIView):
         serializer.save()
         return Response(serializer.data,status=status.HTTP_201_CREATED)
 class CardSetGetView(APIView):
-    def get(self,request):
-        member = request.member
-        cardset_recent = CardSet.objects.filter(member=member,many=True).order_by('-viewed_at')
+    def get(self,request,member_id):
+        cardset_recent = CardSet.objects.filter(member=member_id).order_by('-viewed_at')
         serializer = CardSetSerializer(cardset_recent,many=True)
         return Response(serializer.data,status=status.HTTP_200_OK)

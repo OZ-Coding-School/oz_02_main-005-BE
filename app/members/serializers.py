@@ -27,7 +27,7 @@ class MemberSerializer(serializers.ModelSerializer):
         user.save()
         return user
 
-class LoginSerializer(serializers.ModelSerializer):
+class LoginSerializer(serializers.Serializer):
     account = serializers.CharField()
     password = serializers.CharField(write_only=True)
 

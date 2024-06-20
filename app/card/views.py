@@ -43,6 +43,6 @@ class CardUpdateView(APIView):
 class CardGetView(APIView):
     permission_classes = [IsAuthenticated]
     def get(self,request,card_id):
-        card = Card.objects.filter(id=card_id)
-        serializer = CardSerializer(card)
-        return Response(data=serializer.data,status=status.HTTP_200_OK)
+        card = Card.objects.get(pk=card_id)
+        serializer = CardSerializer(card,many=False)
+        return Response(data=serializer.data)

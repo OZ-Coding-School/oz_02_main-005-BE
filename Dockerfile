@@ -23,9 +23,7 @@ RUN python -m venv /py && \
         --disabled-password \
         --no-create-home \
         django-user
-RUN mkdir /certs
-COPY certs/mycert.crt /certs/mycert.crt
-COPY certs/mykey.key /certs/mykey.key
+
 
 
 

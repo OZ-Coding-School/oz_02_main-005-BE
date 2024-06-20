@@ -2,7 +2,7 @@ from django.shortcuts import render
 from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
-from .serializers import RateSerializer, RateCreateSerializer, CopyCardsetRequestSerializer
+from .serializers import RateSerializer, RateCreateSerializer
 from django.db.models import Avg, Q
 from drf_spectacular.utils import extend_schema, OpenApiParameter
 from django.db import transaction
@@ -149,10 +149,7 @@ def cardset_search(request):
 
 
 # 저장
-@extend_schema(
-    request=CopyCardsetRequestSerializer,
-    responses={201: 'Cardset copied successfully', 400: 'Bad Request', 404: 'Not Found'}
-)
+
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def cardset_save(request):

@@ -1,21 +1,18 @@
 
+
 import os
 from pathlib import Path
 from datetime import timedelta
 from django.conf import settings
 from allauth.account import app_settings
 
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-
 SECRET_KEY = os.getenv("SECRET_KEY", "django-insecure-w-l8kto^$o+^89inpt=2r!z@ccvra^(-sf4l-9pbq2&q&yejt-")
 
 # SECURITY WARNING: don't run with debug turned on in production!
@@ -23,10 +20,7 @@ DEBUG = os.getenv("DEBUG", "True") == "True"
 
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "").split(",")
 
-
 # Application definition
-SITE_ID = 1
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -45,7 +39,6 @@ INSTALLED_APPS = [
     "drf_spectacular",
     "rest_framework_simplejwt",
     "rest_framework_simplejwt.token_blacklist",
-    "sslserver",
     'django.contrib.sites',
     'allauth',
     'allauth.account',
@@ -115,17 +108,16 @@ WSGI_APPLICATION = "app.wsgi.application"
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
-
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.mysql",
-        "NAME": os.getenv("DB_NAME"),
-        "USER": os.getenv("DB_USER"),
-        "PASSWORD": os.getenv("DB_PASSWORD"),
-        "HOST": os.getenv("DB_HOST"),
-        "PORT": os.getenv("DB_PORT", "3306"),
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'HOST': os.environ.get('DB_HOST'),
+        'NAME': os.environ.get('DB_NAME'),
+        'USER': os.environ.get('DB_USER'),
+        'PASSWORD': os.environ.get('DB_PASS'),
     }
 }
+
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
