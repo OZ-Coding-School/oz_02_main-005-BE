@@ -53,6 +53,7 @@ class UpdateFolder(APIView):
             return Response({"error": "Folder not found"}, status=404)
         except Exception as e:
             return Response({"error": str(e)}, status=500)
+
         
 class DeleteFolder(APIView):
     #permission_classes = [IsAuthenticated]
@@ -68,13 +69,17 @@ class DeleteFolder(APIView):
             return Response({"error": "Folder not found"}, status=404)
         except Exception as e:
             return Response({"error": str(e)}, status=500)
+  
         
 #<최신순으로 조회하는 기능>_동기
 class FolderList(APIView):
     #permission_classes = [IsAuthenticated]
 
-    def get(self, request, *args, **kwargs):
-       folders = Folder.objects.all().order_by(F('modified_at').desc())
+    def get(self, request, member_id, *args, **kwargs):
+       if member_id:
+            folders = Folder.objects.all.filter(member_id=member_id).order_by(F('modified_at').desc())
+       else:
+            folders = Folder.objects.none()
        serializer = FolderGetSerializer(folders, many=True)
        return Response(serializer.data, status=status.HTTP_200_OK)
         
