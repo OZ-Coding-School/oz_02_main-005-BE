@@ -10,13 +10,19 @@ from drf_yasg.utils import swagger_auto_schema
 
 from cardset.models import CardSet
 from drf_yasg import openapi
+
 class CreateComment(APIView):
     #permission_classes = [IsAuthenticated]
     
     @swagger_auto_schema(
-        manual_parameters=[
-            openapi.Parameter('name', openapi.IN_QUERY, description="Name of the item", type=openapi.TYPE_STRING)
-        ]
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'content': openapi.Schema(type=openapi.TYPE_STRING, description='content'),
+                'member': openapi.Schema(type=openapi.TYPE_INTEGER, description='member_id'),
+            },
+            required=['content','member']  
+        )
     )
     def post(self, request, cardset_id):
 
@@ -39,7 +45,16 @@ class CreateComment(APIView):
 class CreateRecomment(APIView):
     #permission_classes = [IsAuthenticated]
     
-    @swagger_auto_schema(request_body=CommentSerializer)
+    @swagger_auto_schema(
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'content': openapi.Schema(type=openapi.TYPE_STRING, description='reply_content'),
+                'member': openapi.Schema(type=openapi.TYPE_INTEGER, description='member_id'),
+            },
+            required=['content','member']  
+        )
+    )
     def post(self, request, cardset_id, parent_id):
 
         try:
@@ -77,7 +92,16 @@ class CommentList(APIView):
 class UpdateComment(APIView):
     #permission_classes = [IsAuthenticated]
 
-    @swagger_auto_schema(request_body=CommentSerializer)
+    @swagger_auto_schema(
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'content': openapi.Schema(type=openapi.TYPE_STRING, description='content'),
+                'member': openapi.Schema(type=openapi.TYPE_INTEGER, description='member_id'),
+            },
+            required=['content','member']  
+        )
+    )
     def post(self, request, comment_id): #*args, **kwargs
         data = request.data
         new_content = data.get("content")
